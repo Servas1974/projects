@@ -26,10 +26,11 @@
       margin-top: 40px;
       margin-bottom: 20px;
     }
-    
+
     table {
-      width: 70%;
-      margin: 20px auto;
+      width: 500px;
+      /* Остается для первой таблицы */
+      margin: 10px auto;
       border-collapse: collapse;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       background-color: #fff;
@@ -61,6 +62,14 @@
       text-align: center;
       margin-top: 40px;
       margin-bottom: 20px;
+      /* Добавляем flexbox для кнопок, чтобы они могли располагаться вертикально на любом экране */
+      display: flex;
+      flex-direction: column;
+      /* Располагаем элементы в колонку */
+      align-items: center;
+      /* Центрируем по горизонтали */
+      gap: 15px;
+      /* Добавляем промежуток между кнопками */
     }
 
     .action-button {
@@ -72,7 +81,12 @@
       font-size: 18px;
       cursor: pointer;
       transition: background-color 0.3s ease;
-      margin: 0 10px;
+      /* Убираем фиксированный margin, используем gap в button-container */
+      /* margin: 0 10px; */
+      width: 200px;
+      /* Фиксированная ширина для кнопок */
+      max-width: 90%;
+      /* Но не более 90% ширины родителя */
     }
 
     .action-button:hover {
@@ -80,61 +94,85 @@
     }
 
     .save-button {
-        background-color: #007bff;
+      background-color: #007bff;
     }
 
     .save-button:hover {
-        background-color: #0056b3;
+      background-color: #0056b3;
     }
 
     /* --- СТИЛИ ДЛЯ ВТОРОЙ ТАБЛИЦЫ --- */
     .schedule-table {
-      width: 15%; 
-      table-layout: fixed; 
+      width: 300px;
+      /* Фиксированная очень маленькая ширина */
+      margin: 5px auto;
+      /* Центрируем */
+      border-collapse: collapse;
+      box-shadow: 0 2px 1px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      table-layout: fixed;
+      /* Важно, чтобы ширина колонок соблюдалась */
     }
 
     /* Применяем ширину к заголовкам и ячейкам второй таблицы */
-  
-    .schedule-table td:nth-child(1)
-    {
-        width: 80%; 
+    .schedule-table th,
+    .schedule-table td {
+      padding: 8px 3px;
+      /* Уменьшаем паддинг для компактности */
+      font-size: 0.8em;
+      /* Уменьшаем размер шрифта */
     }
 
-    
+    .schedule-table td:nth-child(1) {
+      width: 160px;
+      /* Ширина для колонки "Время" */
+    }
+
     .schedule-table td:nth-child(2) {
-        width: 50%; 
+      width: 140px;
+      /* Ширина для колонки "Количество" */
     }
 
     /* Общие стили для всех input-полей внутри редактируемых ячеек */
     .schedule-table input {
-        width: 90%; 
-        box-sizing: border-box; 
-        padding: 8px; 
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        text-align: center;
-        font-size: inherit; 
+      width: 140px;
+      /* Занимает почти всю ширину ячейки */
+      box-sizing: border-box;
+      padding: 3px;
+      /* Уменьшаем паддинг */
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      text-align: center;
+      font-size: inherit;
     }
 
     /* *** ИСПРАВЛЕННЫЕ СТИЛИ: ПРИМЕНЯЮТСЯ ТОЛЬКО КОГДА ТАБЛИЦА В РЕЖИМЕ РЕДАКТИРОВАНИЯ *** */
     .schedule-table.edit-mode-active td:nth-child(1) {
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        padding: 20; /* Убираем padding у ячейки для максимального использования пространства */
+      width: 140px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1;
+      /* Убираем padding у ячейки для максимального использования пространства */
     }
 
     .schedule-table.edit-mode-active td:nth-child(1) input {
-        width: 200%; /* Увеличиваем ширину каждого поля */
-        margin: 10; /* Убираем отступы, чтобы они плотнее прилегали */
+      width: 50px;
+      /* Каждое поле займет 45% ширины, чтобы поместился разделитель */
+      margin: 0 1%;
+      /* Небольшой горизонтальный отступ между полями */
+      padding: 3px;
+      /* Уменьшаем паддинг внутри инпута */
     }
-    
+
     .schedule-table.edit-mode-active td:nth-child(1) span.time-separator {
-        display: inline-block;
-        width: 4%; /* Уменьшаем ширину двоеточия */
-        text-align: center;
-        font-weight: bold;
-        font-size: 1.2em; 
+      display: inline-block;
+      width: 4px;
+      /* Корректируем ширину двоеточия */
+      text-align: center;
+      font-weight: bold;
+      font-size: 1em;
+      /* Уменьшаем размер шрифта двоеточия */
     }
   </style>
 </head>
@@ -213,23 +251,23 @@
   </table>
 
   <div class="button-container">
-    <button class="action-button" id="runButton">Запустить</button>
     <button class="action-button" id="editButton">Изменить</button>
+    <button class="action-button" id="runButton">Запустить</button>
     <button class="action-button save-button" id="saveButton" style="display: none;">Сохранить</button>
   </div>
 
   <script>
     // Замените YOUR_CHANNEL_ID и YOUR_READ_API_KEY на свои данные ThingSpeak
     // Если ваш канал ThingSpeak публичный, Read API Key не нужен.
-    const CHANNEL_ID = '3002399'; // Например, 123456
-    const READ_API_KEY = '2R940E9A2PA5O91X'; // Опционально, если канал приватный
+    const CHANNEL_ID1 = '3002399'; // Например, 123456
+    const READ_API_KEY1 = '2R940E9A2PA5O91X'; // Опционально, если канал приватный
     // URL для получения последних данных из ThingSpeak
     // 'results=1' получает только последнюю запись
     // Замените field1, field2 и т.д. на номера полей, которые вы используете в ThingSpeak
-    const API_URL = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?results=1&api_key=${READ_API_KEY}`;
+    const API_URL1 = `https://api.thingspeak.com/channels/${CHANNEL_ID1}/feeds.json?results=1&api_key=${READ_API_KEY1}`;
     async function fetchThingSpeakData() {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL1);
         const data = await response.json();
         if (data && data.feeds && data.feeds.length > 0) {
           const latestFeed = data.feeds[0];
@@ -269,9 +307,6 @@
           // Для времени можно использовать 'created_at' и отформатировать
           //const createdAt = new Date(latestFeed.created_at);
           //document.getElementById('timeValue').textContent = createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        } else {
-          console.log('Нет данных из ThingSpeak.');
-          // Можно обновить ячейки на 'Ошибка' или 'Нет данных'
         }
       } catch (error) {
         console.error('Ошибка при получении данных с ThingSpeak:', error);
@@ -282,142 +317,115 @@
     fetchThingSpeakData();
     // Можно настроить периодическое обновление данных, например, каждые 30 секунд (30000 мс)
     setInterval(fetchThingSpeakData, 180000);
-
-
     // --- КОД ДЛЯ РЕДАКТИРОВАНИЯ ТАБЛИЦЫ ---
     const scheduleTable = document.getElementById('scheduleTable');
     const editButton = document.getElementById('editButton');
     const saveButton = document.getElementById('saveButton');
     const runButton = document.getElementById('runButton'); // Кнопка "Запустить"
-
-    let cellOriginalContents = new Map(); 
+    let cellOriginalContents = new Map();
     let scheduleData = []; // Переменная для хранения данных расписания
-
     editButton.addEventListener('click', () => {
       // Добавляем класс, чтобы активировать стили редактирования
-      scheduleTable.classList.add('edit-mode-active'); 
-
+      scheduleTable.classList.add('edit-mode-active');
       const rows = scheduleTable.querySelectorAll('tbody tr');
-      cellOriginalContents.clear(); 
-
+      cellOriginalContents.clear();
       rows.forEach((row, rowIndex) => {
         const cells = row.querySelectorAll('td');
-        
         cells.forEach((cell, cellIndex) => {
-            cellOriginalContents.set(cell, cell.textContent);
-
-            const isLastRowFirstColumnManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной' && cellIndex === 0);
-
-            if (isLastRowFirstColumnManual) {
-                return; 
-            }
-
-            if (cellIndex === 0) { // Первый столбец (Время)
-                const timeParts = cell.textContent.split(':');
-                let hours = parseInt(timeParts[0], 10);
-                let minutes = parseInt(timeParts[1], 10);
-
-                if (isNaN(hours)) hours = 0;
-                if (isNaN(minutes)) minutes = 0;
-
-                const hourInput = document.createElement('input');
-                hourInput.type = 'number';
-                hourInput.value = String(hours).padStart(2, '0');
-                hourInput.min = '0';
-                hourInput.max = '23';
-                
-                const minuteInput = document.createElement('input');
-                minuteInput.type = 'number';
-                minuteInput.value = String(minutes).padStart(2, '0');
-                minuteInput.min = '0';
-                minuteInput.max = '59';
-
-                const colonSpan = document.createElement('span');
-                colonSpan.textContent = ':';
-                colonSpan.classList.add('time-separator'); 
-
-                cell.textContent = ''; 
-                cell.appendChild(hourInput);
-                cell.appendChild(colonSpan);
-                cell.appendChild(minuteInput);
-
-            } else { // Второй столбец (Количество)
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.value = cell.textContent;
-                cell.textContent = '';
-                cell.appendChild(input);
-            }
+          cellOriginalContents.set(cell, cell.textContent);
+          const isLastRowFirstColumnManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной' && cellIndex === 0);
+          if (isLastRowFirstColumnManual) {
+            return;
+          }
+          if (cellIndex === 0) { // Первый столбец (Время)
+            const timeParts = cell.textContent.split(':');
+            let hours = parseInt(timeParts[0], 10);
+            let minutes = parseInt(timeParts[1], 10);
+            if (isNaN(hours)) hours = 0;
+            if (isNaN(minutes)) minutes = 0;
+            const hourInput = document.createElement('input');
+            hourInput.type = 'number';
+            hourInput.value = String(hours).padStart(2, '0');
+            hourInput.min = '0';
+            hourInput.max = '23';
+            const minuteInput = document.createElement('input');
+            minuteInput.type = 'number';
+            minuteInput.value = String(minutes).padStart(2, '0');
+            minuteInput.min = '0';
+            minuteInput.max = '59';
+            const colonSpan = document.createElement('span');
+            colonSpan.textContent = ':';
+            colonSpan.classList.add('time-separator');
+            cell.textContent = '';
+            cell.appendChild(hourInput);
+            cell.appendChild(colonSpan);
+            cell.appendChild(minuteInput);
+          } else { // Второй столбец (Количество)
+            const DoseInput = document.createElement('input');
+            DoseInput.type = 'number';
+            DoseInput.value = cell.textContent;
+            DoseInput.min = '0';
+            DoseInput.max = '9';
+            cell.textContent = '';
+            cell.appendChild(DoseInput);
+          }
         });
       });
-
-      editButton.style.display = 'none'; 
-      runButton.style.display = 'none'; 
-      saveButton.style.display = 'inline-block'; 
+      editButton.style.display = 'none';
+      runButton.style.display = 'none';
+      saveButton.style.display = 'inline-block';
     });
-
     saveButton.addEventListener('click', () => {
       // Удаляем класс, чтобы вернуть стили к нормальному отображению
-      scheduleTable.classList.remove('edit-mode-active'); 
-
+      scheduleTable.classList.remove('edit-mode-active');
       const rows = scheduleTable.querySelectorAll('tbody tr');
-      const tempScheduleData = []; 
-
+      const tempScheduleData = [];
       rows.forEach((row, rowIndex) => {
         const cells = row.querySelectorAll('td');
-        let currentEntry = {}; 
-
+        let currentEntry = {};
         const isLastRowManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной');
-
         if (isLastRowManual) {
-            currentEntry.mode = 'Ручной'; 
-            const quantityInput = cells[1].querySelector('input');
-            if (quantityInput) {
-                currentEntry.quantity = quantityInput.value;
-                cells[1].textContent = quantityInput.value; 
-            } else {
-                 currentEntry.quantity = cells[1].textContent;
-            }
-            cells[0].textContent = cellOriginalContents.get(cells[0]); 
+          currentEntry.mode = 'Ручной';
+          const quantityInput = cells[1].querySelector('input');
+          if (quantityInput) {
+            currentEntry.quantity = quantityInput.value;
+            cells[1].textContent = quantityInput.value;
+          } else {
+            currentEntry.quantity = cells[1].textContent;
+          }
+          cells[0].textContent = cellOriginalContents.get(cells[0]);
         } else {
-            const hourInput = cells[0].querySelector('input[type="number"]:first-of-type');
-            const minuteInput = cells[0].querySelector('input[type="number"]:last-of-type');
-            const quantityInput = cells[1].querySelector('input');
-
-            if (hourInput && minuteInput) {
-                const hours = String(Math.max(0, Math.min(23, parseInt(hourInput.value, 10) || 0))).padStart(2, '0');
-                const minutes = String(Math.max(0, Math.min(59, parseInt(minuteInput.value, 10) || 0))).padStart(2, '0');
-                
-                currentEntry.hours = hours;
-                currentEntry.minutes = minutes;
-                cells[0].textContent = `${hours}:${minutes}`; 
-            } else {
-                const timeParts = cells[0].textContent.split(':');
-                currentEntry.hours = timeParts[0] || '00';
-                currentEntry.minutes = timeParts[1] || '00';
-            }
-
-            if (quantityInput) {
-                currentEntry.quantity = quantityInput.value;
-                cells[1].textContent = quantityInput.value; 
-            } else {
-                currentEntry.quantity = cells[1].textContent;
-            }
+          const hourInput = cells[0].querySelector('input[type="number"]:first-of-type');
+          const minuteInput = cells[0].querySelector('input[type="number"]:last-of-type');
+          const quantityInput = cells[1].querySelector('input');
+          if (hourInput && minuteInput) {
+            const hours = String(Math.max(0, Math.min(23, parseInt(hourInput.value, 10) || 0))).padStart(2, '0');
+            const minutes = String(Math.max(0, Math.min(59, parseInt(minuteInput.value, 10) || 0))).padStart(2, '0');
+            currentEntry.hours = hours;
+            currentEntry.minutes = minutes;
+            cells[0].textContent = `${hours}:${minutes}`;
+          } else {
+            const timeParts = cells[0].textContent.split(':');
+            currentEntry.hours = timeParts[0] || '00';
+            currentEntry.minutes = timeParts[1] || '00';
+          }
+          if (quantityInput) {
+            currentEntry.quantity = quantityInput.value;
+            cells[1].textContent = quantityInput.value;
+          } else {
+            currentEntry.quantity = cells[1].textContent;
+          }
         }
-        
-        tempScheduleData.push(currentEntry); 
+        tempScheduleData.push(currentEntry);
       });
-      
-      scheduleData = tempScheduleData; 
-      console.log('Структурированные данные расписания готовы:', scheduleData); 
-
-      editButton.style.display = 'inline-block'; 
-      runButton.style.display = 'inline-block'; 
-      saveButton.style.display = 'none'; 
+      scheduleData = tempScheduleData;
+      console.log('Структурированные данные расписания готовы:', scheduleData);
+      editButton.style.display = 'inline-block';
+      runButton.style.display = 'inline-block';
+      saveButton.style.display = 'none';
     });
-
   </script>
-  
+
 </body>
-  
+
 </html>
