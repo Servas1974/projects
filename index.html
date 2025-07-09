@@ -181,8 +181,6 @@
 
   <h1>Питание для друга</h1>
 
-  ---
-
   <h2>Текущее состояние</h2>
   <table>
     <thead>
@@ -212,8 +210,6 @@
     </tbody>
   </table>
 
-  ---
-
   <h2>Расписание</h2>
   <table class="schedule-table" id="scheduleTable">
     <thead>
@@ -224,28 +220,28 @@
     </thead>
     <tbody>
       <tr>
-        <td>07:30</td>
-        <td>5</td>
+        <td>--:--</td>
+        <td>-</td>
       </tr>
       <tr>
-        <td>13:00</td>
-        <td>4</td>
+        <td>--:--</td>
+        <td>-</td>
       </tr>
       <tr>
-        <td>19:45</td>
-        <td>3</td>
+        <td>--:--</td>
+        <td>-</td>
       </tr>
       <tr>
-        <td>00:00</td>
-        <td>0</td>
+        <td>--:--</td>
+        <td>-</td>
       </tr>
       <tr>
-        <td>00:00</td>
-        <td>0</td>
+        <td>--:--</td>
+        <td>-</td>
       </tr>
       <tr>
         <td>Ручной</td>
-        <td>7</td>
+        <td>-</td>
       </tr>
     </tbody>
   </table>
@@ -257,14 +253,59 @@
   </div>
 
   <script>
-    // Замените YOUR_CHANNEL_ID и YOUR_READ_API_KEY на свои данные ThingSpeak
-    // Если ваш канал ThingSpeak публичный, Read API Key не нужен.
     const CHANNEL_ID1 = '3002399'; // Например, 123456
     const READ_API_KEY1 = '2R940E9A2PA5O91X'; // Опционально, если канал приватный
-    // URL для получения последних данных из ThingSpeak
-    // 'results=1' получает только последнюю запись
-    // Замените field1, field2 и т.д. на номера полей, которые вы используете в ThingSpeak
     const API_URL1 = `https://api.thingspeak.com/channels/${CHANNEL_ID1}/feeds.json?results=1&api_key=${READ_API_KEY1}`;
+    const CHANNEL_ID2 = '3005628'; // Например, 123456
+    const READ_API_KEY2 = 'QRE3PONYLRKL3Q4J'; // Опционально, если канал приватный
+    const API_URL2 = `https://api.thingspeak.com/channels/${CHANNEL_ID2}/feeds.json?results=5&api_key=${READ_API_KEY2}`; // Изменено на results=5, чтобы получить 5 последних записей
+    async function fetchThingSpeakTimers() {
+      try {
+        const response = await fetch(API_URL2);
+        const data = await response.json();
+        if (data && data.feeds && data.feeds.length > 0) {
+          const rows = scheduleTable.querySelectorAll('tbody tr'); // Получаем все строки таблицы расписания
+          const latestFeed = data.feeds[0];
+          // Предполагаем, что field1, field2, field3, field4, field5 из ThingSpeak
+          // содержат значения времени для 5 расписаний.
+          const timeValuesFromThingSpeak = [
+            latestFeed.field1,
+            latestFeed.field2,
+            latestFeed.field3,
+            latestFeed.field4,
+            latestFeed.field5,
+            latestFeed.field6
+          ];
+          for (let i = 0; i < 5; i++) {
+            const feed = timeValuesFromThingSpeak[i];
+            const scheduleRowIndex = i; // Соответствует первой, второй, ..., пятой строке таблицы
+            // Предполагаем, что каждое поле (field1, field2, ...)
+            // содержит строку в формате "XЧЧММК"
+            const rawDataString = timeValuesFromThingSpeak[i]; // Берем field1 для примера, так как это общий шаблон.
+            // Вам нужно будет убедиться, что ThingSpeak отправляет
+            // данные для каждого расписания в отдельное поле (field1, field2 и т.д.)
+            // или в одном поле, но несколько раз.
+            // Если каждое расписание в своем поле, то нужно будет:
+            // const rawDataString = feed['field' + (i + 1)]; // Например, field1, field2
+            // Или если все 5 расписаний в одном поле, но это маловероятно.
+            const hours = feed.substring(1, 3); // Часы
+            const minutes = feed.substring(3, 5); // Минуты
+            const quantity = feed.charAt(5); // Количество
+            // Обновляем ячейку "Время"
+            rows[scheduleRowIndex].cells[0].textContent = `${hours}:${minutes}`;
+            // Обновляем ячейку "Количество"
+            rows[scheduleRowIndex].cells[1].textContent = quantity;
+          }
+          // Обновляем значение "Количество" для строки "Ручной" (последняя строка)
+          // Предполагаем, что "Ручной" режим управляется отдельным полем, например field6,
+          // из самой последней записи ThingSpeak.
+          rows[5].cells[1].textContent = timeValuesFromThingSpeak[5];
+          //document.getElementById('manSet').textContent = timeValuesFromThingSpeak[5] || '-';
+        }
+      } catch (error) {
+        // console.error('Ошибка при получении данных с ThingSpeak (timers):', error);
+      }
+    }
     async function fetchThingSpeakData() {
       try {
         const response = await fetch(API_URL1);
@@ -284,6 +325,7 @@
           timeString = `${formattedHours}:${formattedMinutes}`;
           document.getElementById('fullTimeValue').textContent = timeString;
           const field7Value = parseInt(latestFeed.field7); // Получаем значение из field7
+          let statusText; // Объявляем statusText здесь
           switch (field7Value) {
             case 1:
               statusText = 'Исправен';
@@ -304,19 +346,89 @@
               statusText = 'Неизвестный статус'; // Если значение не 1, 2, 3 или 4
           }
           document.getElementById('statusMessage').textContent = statusText;
-          // Для времени можно использовать 'created_at' и отформатировать
-          //const createdAt = new Date(latestFeed.created_at);
-          //document.getElementById('timeValue').textContent = createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
       } catch (error) {
-        console.error('Ошибка при получении данных с ThingSpeak:', error);
-        // Обработка ошибок, например, отображение сообщения об ошибке на странице
+        //console.error('Ошибка при получении данных с ThingSpeak1:', error);
       }
     }
-    // Вызываем функцию при загрузке страницы
-    fetchThingSpeakData();
-    // Можно настроить периодическое обновление данных, например, каждые 30 секунд (30000 мс)
-    setInterval(fetchThingSpeakData, 180000);
+    // Вызываем функции при загрузке страницы
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchThingSpeakData(); // Обновляет первую таблицу
+      fetchThingSpeakTimers(); // Обновляет вторую таблицу
+    });
+    // Настраиваем периодическое обновление
+    setInterval(fetchThingSpeakData, 180000); // Обновление первой таблицы каждые 3 минуты
+    setInterval(fetchThingSpeakTimers, 60000); // Обновление второй таблицы каждую минуту
+    async function ManualStart() {
+      WRITE_API_KEY_CHANNEL2 = 'HJ36J3I2BYCMGA1M';
+      let baseURL = `https://api.thingspeak.com/update?api_key=${WRITE_API_KEY_CHANNEL2}`;
+      let updateURL = baseURL + '&field8=1';
+      try {
+        const response = await fetch(updateURL);
+        const data = await response.text(); // ThingSpeak обычно возвращает число или 0
+        if (parseInt(data, 10) > 0) {
+          //console.log('Данные расписания успешно отправлены на ThingSpeak. Entry ID:', data);
+          alert('Команда отправлена');
+        } else if (parseInt(data, 10) === 0) {
+          //console.warn('ThingSpeak вернул 0. Возможно, проблема с API ключом или интервалом записи.', data);
+          alert('ThingSpeak не подтвердил передачу команды');
+        } else {
+          //console.error('Ошибка отправки данных на ThingSpeak:', data);
+          alert('Ошибка передаче команды. Пожалуйста, попробуйте еще раз.');
+        }
+      } catch (error) {
+        //console.error('Ошибка сети при отправке данных на ThingSpeak:', error);
+        alert('Ошибка сети при сохранении расписания. Проверьте подключение.');
+      }
+    }
+    async function sendScheduleDataToThingSpeak(scheduleData) {
+      WRITE_API_KEY_CHANNEL2 = 'HJ36J3I2BYCMGA1M';
+      // Базовый URL для записи на ThingSpeak
+      let baseURL = `https://api.thingspeak.com/update?api_key=${WRITE_API_KEY_CHANNEL2}`;
+      let updateURL = baseURL;
+      // ThingSpeak позволяет отправить до 8 полей в одном запросе.
+      // Мы будем формировать строки "XЧЧММК" для каждого расписания (field1-field5)
+      // и отправлять "Количество" для ручного режима (field6).
+      // Массив для хранения готовых строк "XЧЧММК"
+      const formattedScheduleStrings = [];
+      // Формируем данные для первых 5 расписаний
+      for (let i = 0; i < 5; i++) {
+        // Убедитесь, что entry существует и имеет необходимые свойства
+        const entry = scheduleData[i];
+        // Произвольный нулевой символ 'A' (можно изменить)
+        const arbitraryChar = i;
+        const timeString = `${entry.hours}${entry.minutes}`;
+        const quantityString = String(entry.quantity); // Количество - один символ
+        // Формируем строку "XЧЧММК"
+        formattedScheduleStrings.push(`${arbitraryChar}${timeString}${quantityString}`);
+        updateURL += `&field${i + 1}=${encodeURIComponent(formattedScheduleStrings[i])}`;
+      }
+      // Добавляем значение для ручного режима (field6)
+      // Предполагаем, что ручной режим - это последний элемент в scheduleData (индекс 5)
+      const manualEntry = scheduleData[5];
+      updateURL += `&field6=${encodeURIComponent(manualEntry.quantity)}`;
+      updateURL += `&field7=1`;
+      //console.log("Отправка на ThingSpeak URL:", updateURL); // Для отладки
+      try {
+        const response = await fetch(updateURL);
+        const data = await response.text(); // ThingSpeak обычно возвращает число или 0
+        if (parseInt(data, 10) > 0) {
+          //console.log('Данные расписания успешно отправлены на ThingSpeak. Entry ID:', data);
+          alert('Расписание успешно сохранено на ThingSpeak!');
+        } else if (parseInt(data, 10) === 0) {
+          //console.warn('ThingSpeak вернул 0. Возможно, проблема с API ключом или интервалом записи.', data);
+          alert('Расписание сохранено, но ThingSpeak вернул 0. Проверьте API ключ или интервал записи.');
+        } else {
+          //console.error('Ошибка отправки данных на ThingSpeak:', data);
+          alert('Ошибка при сохранении расписания на ThingSpeak. Пожалуйста, попробуйте еще раз.');
+        }
+      } catch (error) {
+        //console.error('Ошибка сети при отправке данных на ThingSpeak:', error);
+        alert('Ошибка сети при сохранении расписания. Проверьте подключение.');
+      }
+    }
+    // ... ваш существующий JavaScript код после этой части ...
+    // ИЗМЕНИТЕ ЭТУ ЧАСТЬ В ОБРАБОТЧИКЕ saveButton.addEventListener('click', ...)
     // --- КОД ДЛЯ РЕДАКТИРОВАНИЯ ТАБЛИЦЫ ---
     const scheduleTable = document.getElementById('scheduleTable');
     const editButton = document.getElementById('editButton');
@@ -324,6 +436,8 @@
     const runButton = document.getElementById('runButton'); // Кнопка "Запустить"
     let cellOriginalContents = new Map();
     let scheduleData = []; // Переменная для хранения данных расписания
+    
+    
     editButton.addEventListener('click', () => {
       // Добавляем класс, чтобы активировать стили редактирования
       scheduleTable.classList.add('edit-mode-active');
@@ -331,12 +445,18 @@
       cellOriginalContents.clear();
       rows.forEach((row, rowIndex) => {
         const cells = row.querySelectorAll('td');
+        // Проверяем, является ли это строкой "Ручной"
+        const isLastRowFirstColumnManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной');
+        // Если это строка "Ручной" и мы находимся в первой колонке, пропускаем ее
+        if (isLastRowFirstColumnManual && cells[0] === cells[0]) {
+          // Для "Ручной" колонки "Время" просто сохраняем текст, не делаем её редактируемой
+          cellOriginalContents.set(cells[0], cells[0].textContent);
+        }
         cells.forEach((cell, cellIndex) => {
-          cellOriginalContents.set(cell, cell.textContent);
-          const isLastRowFirstColumnManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной' && cellIndex === 0);
-          if (isLastRowFirstColumnManual) {
-            return;
+          if (isLastRowFirstColumnManual && cellIndex === 0) {
+            return; // Пропускаем редактирование ячейки "Ручной"
           }
+          cellOriginalContents.set(cell, cell.textContent); // Сохраняем исходное содержимое
           if (cellIndex === 0) { // Первый столбец (Время)
             const timeParts = cell.textContent.split(':');
             let hours = parseInt(timeParts[0], 10);
@@ -356,27 +476,50 @@
             const colonSpan = document.createElement('span');
             colonSpan.textContent = ':';
             colonSpan.classList.add('time-separator');
-            cell.textContent = '';
+            cell.textContent = ''; // Очищаем ячейку
             cell.appendChild(hourInput);
             cell.appendChild(colonSpan);
             cell.appendChild(minuteInput);
           } else { // Второй столбец (Количество)
             const DoseInput = document.createElement('input');
             DoseInput.type = 'number';
-            DoseInput.value = cell.textContent;
+            DoseInput.value = cell.textContent.trim() === '-' ? '0' : cell.textContent; // Если '-', то '0'
             DoseInput.min = '0';
-            DoseInput.max = '9';
-            cell.textContent = '';
+            DoseInput.max = '9'; // Максимум до 9, как вы указали
+            cell.textContent = ''; // Очищаем ячейку
             cell.appendChild(DoseInput);
           }
         });
       });
+      
+      
+      
+      runButton.addEventListener('click', () => {
+     ManualStart();
+      });
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       editButton.style.display = 'none';
       runButton.style.display = 'none';
       saveButton.style.display = 'inline-block';
     });
     saveButton.addEventListener('click', () => {
-      // Удаляем класс, чтобы вернуть стили к нормальному отображению
+      // ... (ваш существующий код внутри saveButton.addEventListener) ...
       scheduleTable.classList.remove('edit-mode-active');
       const rows = scheduleTable.querySelectorAll('tbody tr');
       const tempScheduleData = [];
@@ -385,7 +528,6 @@
         let currentEntry = {};
         const isLastRowManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной');
         if (isLastRowManual) {
-          currentEntry.mode = 'Ручной';
           const quantityInput = cells[1].querySelector('input');
           if (quantityInput) {
             currentEntry.quantity = quantityInput.value;
@@ -393,7 +535,7 @@
           } else {
             currentEntry.quantity = cells[1].textContent;
           }
-          cells[0].textContent = cellOriginalContents.get(cells[0]);
+          cells[0].textContent = 'Ручной';
         } else {
           const hourInput = cells[0].querySelector('input[type="number"]:first-of-type');
           const minuteInput = cells[0].querySelector('input[type="number"]:last-of-type');
@@ -410,8 +552,9 @@
             currentEntry.minutes = timeParts[1] || '00';
           }
           if (quantityInput) {
-            currentEntry.quantity = quantityInput.value;
-            cells[1].textContent = quantityInput.value;
+            const quantity = String(Math.max(0, Math.min(9, parseInt(quantityInput.value, 10) || 0)));
+            currentEntry.quantity = quantity;
+            cells[1].textContent = quantity;
           } else {
             currentEntry.quantity = cells[1].textContent;
           }
@@ -419,7 +562,9 @@
         tempScheduleData.push(currentEntry);
       });
       scheduleData = tempScheduleData;
-      console.log('Структурированные данные расписания готовы:', scheduleData);
+      // !!! ДОБАВЛЕННЫЙ ВЫЗОВ ФУНКЦИИ ОТПРАВКИ !!!
+      sendScheduleDataToThingSpeak(scheduleData);
+      // !!! КОНЕЦ ДОБАВЛЕННОГО ВЫЗОВА !!!
       editButton.style.display = 'inline-block';
       runButton.style.display = 'inline-block';
       saveButton.style.display = 'none';
