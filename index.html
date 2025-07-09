@@ -359,10 +359,12 @@
     // Настраиваем периодическое обновление
     setInterval(fetchThingSpeakData, 180000); // Обновление первой таблицы каждые 3 минуты
     setInterval(fetchThingSpeakTimers, 60000); // Обновление второй таблицы каждую минуту
+    
+    
     async function ManualStart() {
       WRITE_API_KEY_CHANNEL2 = 'HJ36J3I2BYCMGA1M';
       let baseURL = `https://api.thingspeak.com/update?api_key=${WRITE_API_KEY_CHANNEL2}`;
-      let updateURL = baseURL + '&field8=1';
+      let updateURL = baseURL + '&field8=111';
       try {
         const response = await fetch(updateURL);
         const data = await response.text(); // ThingSpeak обычно возвращает число или 0
