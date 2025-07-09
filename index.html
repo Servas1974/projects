@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Почти готовая страница</title>
+  <title>Финальная версия без графиков</title>
   <style>
     /* Ваши существующие стили */
     body {
@@ -407,7 +407,7 @@
       // Предполагаем, что ручной режим - это последний элемент в scheduleData (индекс 5)
       const manualEntry = scheduleData[5];
       updateURL += `&field6=${encodeURIComponent(manualEntry.quantity)}`;
-      updateURL += `&field7=1`;
+      updateURL += `&field7=111`;
       //console.log("Отправка на ThingSpeak URL:", updateURL); // Для отладки
       try {
         const response = await fetch(updateURL);
@@ -436,8 +436,6 @@
     const runButton = document.getElementById('runButton'); // Кнопка "Запустить"
     let cellOriginalContents = new Map();
     let scheduleData = []; // Переменная для хранения данных расписания
-    
-    
     editButton.addEventListener('click', () => {
       // Добавляем класс, чтобы активировать стили редактирования
       scheduleTable.classList.add('edit-mode-active');
@@ -491,30 +489,19 @@
           }
         });
       });
-      
-         editButton.style.display = 'none';
+      editButton.style.display = 'none';
       runButton.style.display = 'none';
       saveButton.style.display = 'inline-block';
     });
-      
-      
-      
-      
-      runButton.addEventListener('click', () => {
+    
+    
+    runButton.addEventListener('click', () => {
      ManualStart();
-
-
-        
-      editButton.style.display = 'inline-block';
-      runButton.style.display = 'inline-block';
-      saveButton.style.display = 'none';
+    editButton.style.display = 'inline-block';
+    runButton.style.display = 'inline-block';
+    saveButton.style.display = 'none';
     });
-      
-      
-      
-      
-      
-   
+    
     
     saveButton.addEventListener('click', () => {
       // ... (ваш существующий код внутри saveButton.addEventListener) ...
