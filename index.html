@@ -174,161 +174,232 @@
       font-size: 1em;
       /* Уменьшаем размер шрифта двоеточия */
     }
+
+    /* --- Стили для парольной защиты --- */
+    #password-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      color: white;
+      flex-direction: column;
+    }
+
+    #password-form {
+      background-color: #333;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    #password-form input[type="password"] {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      width: 200px;
+      font-size: 16px;
+      background-color: #444;
+      color: white;
+    }
+
+    #password-form button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    #password-form button:hover {
+      background-color: #0056b3;
+    }
+
+    #password-message {
+      color: red;
+      margin-top: 10px;
+    }
+
+    /* --- УПРОЩЕННЫЕ СТИЛИ для кликабельных ячеек --- */
+    /* Теперь только меняем курсор, чтобы показать, что ячейка кликабельна */
+    .clickable-cell {
+      cursor: pointer;
+    }
+
+    .clickable-cell:hover {
+      background-color: #e9ecef;
+      /* Тот же цвет, что и для строки, чтобы не было диссонанса */
+    }
   </style>
 </head>
 
 <body>
 
-  <h1>Питание для друга</h1>
-
-  <h2>Текущее состояние</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Температура</th>
-        <th>Влажность</th>
-        <th>Напряжение</th>
-        <th>Средний ток последнего цикла</th>
-        <th>Время последнего цикла</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td id="tempValue">--</td>
-        <td id="humidityValue">--</td>
-        <td id="voltageValue">--</td>
-        <td id="currentValue">--</td>
-        <td id="fullTimeValue">--</td>
-      </tr>
-      <tr>
-        <td>°С</td>
-        <td>­%</td>
-        <td>В</td>
-        <td>mA</td>
-        <td id="statusMessage">--</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2>Расписание</h2>
-  <table class="schedule-table" id="scheduleTable">
-    <thead>
-      <tr>
-        <th>Время</th>
-        <th>Количество</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>--:--</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>--:--</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>--:--</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>--:--</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>--:--</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Ручной</td>
-        <td>-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="button-container">
-    <button class="action-button" id="editButton">Изменить</button>
-    <button class="action-button" id="runButton">Запустить</button>
-    <button class="action-button save-button" id="saveButton" style="display: none;">Сохранить</button>
+  <div id="password-overlay">
+    <div id="password-form">
+      <h2>Введите пароль для доступа</h2>
+      <input type="password" id="password-input" placeholder="Пароль">
+      <button id="submit-password">Войти</button>
+      <p id="password-message"></p>
+    </div>
   </div>
 
+  <div id="main-content" style="display: none;">
+
+    <h1>Питание для друга</h1>
+
+    <h2>Текущее состояние</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Температура</th>
+          <th>Влажность</th>
+          <th>Напряжение</th>
+          <th>Средний ток последнего цикла</th>
+          <th>Время последнего цикла</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="tempValue" class="clickable-cell">--</td>
+          <td id="humidityValue" class="clickable-cell">--</td>
+          <td id="voltageValue" class="clickable-cell">--</td>
+          <td id="currentValue">--</td>
+          <td id="fullTimeValue">--</td>
+        </tr>
+        <tr>
+          <td>°С</td>
+          <td>­%</td>
+          <td>В</td>
+          <td>mA</td>
+          <td id="statusMessage">--</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Расписание</h2>
+    <table class="schedule-table" id="scheduleTable">
+      <thead>
+        <tr>
+          <th>Время</th>
+          <th>Количество</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>--:--</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>--:--</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>--:--</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>--:--</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>--:--</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>Ручной</td>
+          <td>-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="button-container">
+      <button class="action-button" id="editButton">Изменить</button>
+      <button class="action-button" id="runButton">Запустить</button>
+      <button class="action-button save-button" id="saveButton" style="display: none;">Сохранить</button>
+    </div>
+
+  </div>
   <script>
- 
     const API_URL1 = `https://api.thingspeak.com/channels/3002399/feeds.json?results=1`;
-    const API_URL2 = `https://api.thingspeak.com/channels/3005628/feeds.json?results=1`; // Изменено на results=5, чтобы получить 5 последних записей
+    const API_URL2 = `https://api.thingspeak.com/channels/3005628/feeds.json?results=1`;
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchThingSpeakData(); // Обновляет первую таблицу
+      fetchThingSpeakTimers(); // Обновляет вторую таблицу
+    });
+    // Настраиваем периодическое обновление
+    setInterval(fetchThingSpeakData, 30000);
+    let fetchTimersInterval;
+
+    function startThingSpeakUpdates() {
+      clearInterval(fetchTimersInterval);
+      //fetchThingSpeakTimers(); // Вызываем сразу для первого обновления
+      fetchTimersInterval = setInterval(fetchThingSpeakTimers, 120000); // 2 минуты
+    }
+
+    function stopThingSpeakUpdates() {
+      clearInterval(fetchTimersInterval);
+    }
+    fetchDataInterval = setInterval(fetchThingSpeakData, 30000); // 30 секунд
     async function fetchThingSpeakTimers() {
       try {
         const response = await fetch(API_URL2);
-         
         const data = await response.json();
-        //console.log(data);
         if (data && data.feeds && data.feeds.length > 0) {
-          const rows = scheduleTable.querySelectorAll('tbody tr'); // Получаем все строки таблицы расписания
-          
+          const rows = scheduleTable.querySelectorAll('tbody tr');
           const latestFeed = data.feeds[0];
-          // Предполагаем, что field1, field2, field3, field4, field5 из ThingSpeak
-          // содержат значения времени для 5 расписаний.
           const timeValuesFromThingSpeak = [
             latestFeed.field1 || 'N/A',
             latestFeed.field2 || 'N/A',
             latestFeed.field3 || 'N/A',
             latestFeed.field4 || 'N/A',
             latestFeed.field5 || 'N/A',
-            latestFeed.field6 || 'N/A'
+            latestFeed.field6 || 'N/A' // Для ручного режима
           ];
-          
           for (let i = 0; i < 5; i++) {
             const feed = timeValuesFromThingSpeak[i];
-            const scheduleRowIndex = i; // Соответствует первой, второй, ..., пятой строке таблицы
-            // Предполагаем, что каждое поле (field1, field2, ...)
-            // содержит строку в формате "XЧЧММК"
-            const rawDataString = timeValuesFromThingSpeak[i]; // Берем field1 для примера, так как это общий шаблон.
-            // Вам нужно будет убедиться, что ThingSpeak отправляет
-            // данные для каждого расписания в отдельное поле (field1, field2 и т.д.)
-            // или в одном поле, но несколько раз.
-            // Если каждое расписание в своем поле, то нужно будет:
-            // const rawDataString = feed['field' + (i + 1)]; // Например, field1, field2
-            // Или если все 5 расписаний в одном поле, но это маловероятно.
-            const hours = feed.substring(1, 3); // Часы
-            const minutes = feed.substring(3, 5); // Минуты
-            const quantity = feed.charAt(5); // Количество
-            // Обновляем ячейку "Время"
+            const scheduleRowIndex = i;
+            const hours = feed.substring(1, 3);
+            const minutes = feed.substring(3, 5);
+            const quantity = feed.charAt(5);
             rows[scheduleRowIndex].cells[0].textContent = `${hours}:${minutes}`;
-            // Обновляем ячейку "Количество"
             rows[scheduleRowIndex].cells[1].textContent = quantity;
           }
-          // Обновляем значение "Количество" для строки "Ручной" (последняя строка)
-          // Предполагаем, что "Ручной" режим управляется отдельным полем, например field6,
-          // из самой последней записи ThingSpeak.
           rows[5].cells[1].textContent = timeValuesFromThingSpeak[5];
-          //document.getElementById('manSet').textContent = timeValuesFromThingSpeak[5] || '-';
         }
       } catch (error) {
         console.error('Ошибка при получении данных с ThingSpeak (timers):', error);
       }
     }
-    
     async function fetchThingSpeakData() {
       try {
         const response = await fetch(API_URL1);
         const data = await response.json();
         if (data && data.feeds && data.feeds.length > 0) {
           const latestFeed = data.feeds[0];
-         
-          // Обновляем значения в таблице
-          // Убедитесь, что field1, field2 и т.д. соответствуют вашим полям в ThingSpeak
+          // Обновляем значения
           document.getElementById('voltageValue').textContent = latestFeed.field1 || 'N/A';
           document.getElementById('currentValue').textContent = latestFeed.field2 || 'N/A';
           document.getElementById('tempValue').textContent = latestFeed.field3 || 'N/A';
           document.getElementById('humidityValue').textContent = latestFeed.field4 || 'N/A';
-          const hours = parseInt(latestFeed.field5); // Предполагаем, что field5 - это часы
-          const minutes = parseInt(latestFeed.field6); // Предполагаем, что field6 - это минуты
+          const hours = parseInt(latestFeed.field5);
+          const minutes = parseInt(latestFeed.field6);
           const formattedHours = String(hours).padStart(2, '0');
           const formattedMinutes = String(minutes).padStart(2, '0');
-          timeString = `${formattedHours}:${formattedMinutes}`;
+          const timeString = `${formattedHours}:${formattedMinutes}`;
           document.getElementById('fullTimeValue').textContent = timeString;
-          const field7Value = parseInt(latestFeed.field7); // Получаем значение из field7
-          let statusText; // Объявляем statusText здесь
+          const field7Value = parseInt(latestFeed.field7);
+          let statusText;
           switch (field7Value) {
             case 1:
               statusText = 'Исправен';
@@ -346,7 +417,7 @@
               statusText = 'В работе ...';
               break;
             default:
-              statusText = 'Неизвестный статус'; // Если значение не 1, 2, 3 или 4
+              statusText = 'Неизвестный статус';
           }
           document.getElementById('statusMessage').textContent = statusText;
         }
@@ -354,108 +425,73 @@
         console.error('Ошибка при получении данных с ThingSpeak1:', error);
       }
     }
-    // Вызываем функции при загрузке страницы
-    document.addEventListener("DOMContentLoaded", () => {
-    fetchThingSpeakData(); // Обновляет первую таблицу
-    fetchThingSpeakTimers(); // Обновляет вторую таблицу
-     });
-    // Настраиваем периодическое обновление
-    setInterval(fetchThingSpeakData, 30000); 
-    setInterval(fetchThingSpeakTimers, 180000); 
     async function ManualStart() {
-      WRITE_API_KEY_CHANNEL2 = 'HJ36J3I2BYCMGA1M';
-      let baseURL = `https://api.thingspeak.com/update?api_key=${WRITE_API_KEY_CHANNEL2}`;
-      let updateURL = baseURL + '&field8=111';
+      let updateURL = `https://api.thingspeak.com/update?api_key=HJ36J3I2BYCMGA1M&field8=111`;
       try {
         const response = await fetch(updateURL);
-        const data = await response.text(); // ThingSpeak обычно возвращает число или 0
+        const data = await response.text();
         if (parseInt(data, 10) > 0) {
-          //console.log('Данные расписания успешно отправлены на ThingSpeak. Entry ID:', data);
           alert('Команда отправлена');
         } else if (parseInt(data, 10) === 0) {
-          //console.warn('ThingSpeak вернул 0. Возможно, проблема с API ключом или интервалом записи.', data);
           alert('ThingSpeak не подтвердил передачу команды');
         } else {
-          //console.error('Ошибка отправки данных на ThingSpeak:', data);
           alert('Ошибка передаче команды. Пожалуйста, попробуйте еще раз.');
         }
       } catch (error) {
-        //console.error('Ошибка сети при отправке данных на ThingSpeak:', error);
         alert('Ошибка сети при сохранении расписания. Проверьте подключение.');
       }
     }
     async function sendScheduleDataToThingSpeak(scheduleData) {
- 
       let updateURL = `https://api.thingspeak.com/update?api_key=HJ36J3I2BYCMGA1M`;
-      // ThingSpeak позволяет отправить до 8 полей в одном запросе.
-      // Мы будем формировать строки "XЧЧММК" для каждого расписания (field1-field5)
-      // и отправлять "Количество" для ручного режима (field6).
-      // Массив для хранения готовых строк "XЧЧММК"
       const formattedScheduleStrings = [];
-      // Формируем данные для первых 5 расписаний
       for (let i = 0; i < 5; i++) {
-        // Убедитесь, что entry существует и имеет необходимые свойства
         const entry = scheduleData[i];
-        // Произвольный нулевой символ 'A' (можно изменить)
-        const arbitraryChar = i + 1;
+        const arbitraryChar = i + 1; // Используем 1-5 для X
         const timeString = `${entry.hours}${entry.minutes}`;
-        const quantityString = String(entry.quantity); // Количество - один символ
-        // Формируем строку "XЧЧММК"
+        const quantityString = String(entry.quantity);
         formattedScheduleStrings.push(`${arbitraryChar}${timeString}${quantityString}`);
         updateURL += `&field${i + 1}=${encodeURIComponent(formattedScheduleStrings[i])}`;
       }
-      // Добавляем значение для ручного режима (field6)
-      // Предполагаем, что ручной режим - это последний элемент в scheduleData (индекс 5)
       const manualEntry = scheduleData[5];
       updateURL += `&field6=${encodeURIComponent(manualEntry.quantity)}`;
       updateURL += `&field7=111`;
-      //console.log("Отправка на ThingSpeak URL:", updateURL); // Для отладки
       try {
         const response = await fetch(updateURL);
-        const data = await response.text(); // ThingSpeak обычно возвращает число или 0
+        const data = await response.text();
         if (parseInt(data, 10) > 0) {
-          //console.log('Данные расписания успешно отправлены на ThingSpeak. Entry ID:', data);
           alert('Расписание успешно сохранено на ThingSpeak!');
         } else if (parseInt(data, 10) === 0) {
-          //console.warn('ThingSpeak вернул 0. Возможно, проблема с API ключом или интервалом записи.', data);
           alert('Расписание сохранено, но ThingSpeak вернул 0. Проверьте API ключ или интервал записи.');
         } else {
-          //console.error('Ошибка отправки данных на ThingSpeak:', data);
           alert('Ошибка при сохранении расписания на ThingSpeak. Пожалуйста, попробуйте еще раз.');
         }
       } catch (error) {
-        //console.error('Ошибка сети при отправке данных на ThingSpeak:', error);
         alert('Ошибка сети при сохранении расписания. Проверьте подключение.');
       }
     }
-    // ... ваш существующий JavaScript код после этой части ...
-    // ИЗМЕНИТЕ ЭТУ ЧАСТЬ В ОБРАБОТЧИКЕ saveButton.addEventListener('click', ...)
     // --- КОД ДЛЯ РЕДАКТИРОВАНИЯ ТАБЛИЦЫ ---
     const scheduleTable = document.getElementById('scheduleTable');
     const editButton = document.getElementById('editButton');
     const saveButton = document.getElementById('saveButton');
-    const runButton = document.getElementById('runButton'); // Кнопка "Запустить"
+    const runButton = document.getElementById('runButton');
     let cellOriginalContents = new Map();
-    let scheduleData = []; // Переменная для хранения данных расписания
+    let scheduleData = [];
     editButton.addEventListener('click', () => {
-      // Добавляем класс, чтобы активировать стили редактирования
+      stopThingSpeakUpdates(); // ОСТАНОВКА ОБМЕНА
       scheduleTable.classList.add('edit-mode-active');
       const rows = scheduleTable.querySelectorAll('tbody tr');
       cellOriginalContents.clear();
       rows.forEach((row, rowIndex) => {
         const cells = row.querySelectorAll('td');
-        // Проверяем, является ли это строкой "Ручной"
         const isLastRowFirstColumnManual = (rowIndex === rows.length - 1 && cells[0].textContent.trim().toLowerCase() === 'ручной');
-        // Если это строка "Ручной" и мы находимся в первой колонке, пропускаем ее
         if (isLastRowFirstColumnManual && cells[0] === cells[0]) {
-          // Для "Ручной" колонки "Время" просто сохраняем текст, не делаем её редактируемой
           cellOriginalContents.set(cells[0], cells[0].textContent);
         }
         cells.forEach((cell, cellIndex) => {
           if (isLastRowFirstColumnManual && cellIndex === 0) {
-            return; // Пропускаем редактирование ячейки "Ручной"
+            return;
           }
-          cellOriginalContents.set(cell, cell.textContent); // Сохраняем исходное содержимое
+          cellOriginalContents.set(cell, cell.textContent);
           if (cellIndex === 0) { // Первый столбец (Время)
             const timeParts = cell.textContent.split(':');
             let hours = parseInt(timeParts[0], 10);
@@ -475,17 +511,17 @@
             const colonSpan = document.createElement('span');
             colonSpan.textContent = ':';
             colonSpan.classList.add('time-separator');
-            cell.textContent = ''; // Очищаем ячейку
+            cell.textContent = '';
             cell.appendChild(hourInput);
             cell.appendChild(colonSpan);
             cell.appendChild(minuteInput);
           } else { // Второй столбец (Количество)
             const DoseInput = document.createElement('input');
             DoseInput.type = 'number';
-            DoseInput.value = cell.textContent.trim() === '-' ? '0' : cell.textContent; // Если '-', то '0'
+            DoseInput.value = cell.textContent.trim() === '-' ? '0' : cell.textContent;
             DoseInput.min = '0';
-            DoseInput.max = '9'; // Максимум до 9, как вы указали
-            cell.textContent = ''; // Очищаем ячейку
+            DoseInput.max = '9';
+            cell.textContent = '';
             cell.appendChild(DoseInput);
           }
         });
@@ -496,12 +532,12 @@
     });
     runButton.addEventListener('click', () => {
       ManualStart();
+      startThingSpeakUpdates(); // ВОЗОБНОВЛЕНИЕ ОБМЕНА
       editButton.style.display = 'inline-block';
       runButton.style.display = 'inline-block';
       saveButton.style.display = 'none';
     });
     saveButton.addEventListener('click', () => {
-      // ... (ваш существующий код внутри saveButton.addEventListener) ...
       scheduleTable.classList.remove('edit-mode-active');
       const rows = scheduleTable.querySelectorAll('tbody tr');
       const tempScheduleData = [];
@@ -544,12 +580,75 @@
         tempScheduleData.push(currentEntry);
       });
       scheduleData = tempScheduleData;
-      // !!! ДОБАВЛЕННЫЙ ВЫЗОВ ФУНКЦИИ ОТПРАВКИ !!!
       sendScheduleDataToThingSpeak(scheduleData);
-      // !!! КОНЕЦ ДОБАВЛЕННОГО ВЫЗОВА !!!
+      startThingSpeakUpdates(); // ВОЗОБНОВЛЕНИЕ ОБМЕНА
       editButton.style.display = 'inline-block';
       runButton.style.display = 'inline-block';
       saveButton.style.display = 'none';
+    });
+    // --- Логика парольной защиты ---
+    const correctPassword = "12345"; // *** ВНИМАНИЕ: Это крайне небезопасный способ хранения пароля.
+    // Пароль виден в исходном коде страницы. Для реальных проектов
+    // требуется серверная аутентификация. ***
+    const passwordOverlay = document.getElementById('password-overlay');
+    const passwordInput = document.getElementById('password-input');
+    const submitPasswordButton = document.getElementById('submit-password');
+    const passwordMessage = document.getElementById('password-message');
+    const mainContent = document.getElementById('main-content');
+
+    function checkPassword() {
+      const enteredPassword = passwordInput.value;
+      if (enteredPassword === correctPassword) {
+        passwordOverlay.style.display = 'none';
+        mainContent.style.display = 'block'; // Показываем основной контент
+        sessionStorage.setItem('authenticated', 'true'); // Запоминаем, что пользователь вошел (для текущей сессии)
+        startThingSpeakUpdates(); // Запускаем обновление данных только после успешного входа
+      } else {
+        passwordMessage.textContent = 'Неверный пароль. Попробуйте еще раз.';
+        passwordInput.value = ''; // Очищаем поле ввода
+      }
+    }
+    submitPasswordButton.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+    // --- Логика кликабельных ячеек ---
+    function setupClickableCells() {
+      const tempCell = document.getElementById('tempValue');
+      const humidityCell = document.getElementById('humidityValue');
+      const voltageCell = document.getElementById('voltageValue');
+      // !!! ЗАМЕНИТЕ ЭТИ URL-адреса на нужные вам !!!
+      // Пример: const tempUrl = 'https://example.com/temperature-info';
+      //         const humidityUrl = 'https://example.com/humidity-graph';
+      //         const voltageUrl = 'https://example.com/voltage-data';
+      tempCell.addEventListener('click', () => {
+        window.open(`https://thingspeak.mathworks.com/channels/3002399/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=500&title=Temperature%2C+%C2%B0C&type=line`, '_blank'); // Открывает в новой вкладке
+        //alert('Клик по Температуре. Здесь должна быть ссылка на график/информацию по температуре.');
+      });
+      humidityCell.addEventListener('click', () => {
+        window.open(`https://thingspeak.mathworks.com/channels/3002399/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=500&title=Humidity%2C+%25&type=line`, '_blank');
+        //alert('Клик по Влажности. Здесь должна быть ссылка на график/информацию по влажности.');
+      });
+      voltageCell.addEventListener('click', () => {
+        window.open(`https://thingspeak.mathworks.com/channels/3002399/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=300&title=DC+voltage%2C+V&type=line`, '_blank');
+        //alert('Клик по Напряжению. Здесь должна быть ссылка на график/информацию по напряжению.');
+      });
+    }
+    // Вызываем функции при загрузке страницы
+    document.addEventListener("DOMContentLoaded", () => {
+      setupClickableCells(); // Настраиваем кликабельные ячейки
+      // Проверяем, был ли пользователь уже аутентифицирован в этой сессии
+      if (sessionStorage.getItem('authenticated') === 'true') {
+        passwordOverlay.style.display = 'none';
+        mainContent.style.display = 'block';
+        startThingSpeakUpdates(); // Запускаем обновление, если уже вошли
+      } else {
+        // Если не аутентифицирован, показываем форму пароля
+        passwordOverlay.style.display = 'flex';
+        mainContent.style.display = 'none';
+      }
     });
   </script>
 
