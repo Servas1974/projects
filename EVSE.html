@@ -169,7 +169,7 @@
   const CHANNEL_3_KEY = '93PAQ6CZB0C6DI5Q';
   const THING_SPEAK_URL_1 = `https://api.thingspeak.com/channels/${CHANNEL_1_ID}/feeds.json?api_key=${CHANNEL_1_KEY}&results=1`;
   const THING_SPEAK_URL_2 = `https://api.thingspeak.com/channels/${CHANNEL_2_ID}/feeds.json?api_key=${CHANNEL_2_KEY}&results=1`;
-  const THING_SPEAK_URL_3 = `https://api.thingspeak.com/channels/${CHANNEL_3_ID}/feeds.json?api_key=${CHANNEL_3_KEY}&results=2`;
+  const THING_SPEAK_URL_3 = `https://api.thingspeak.com/channels/${CHANNEL_3_ID}/feeds.json?api_key=${CHANNEL_3_KEY}&results=1`;
   async function fetchDataAndFillTables() {
     try {
       const [response1, response2, response3] = await Promise.all([
@@ -185,10 +185,11 @@
         fillTable1(data1.feeds[0]);
         fillTable22(data1.feeds[0]);
       }
+      console.log(data2.feeds)
       if (data2.feeds && data2.feeds.length > 0) {
         fillTable2(data2.feeds[0]);
       }
-      if (data3.feeds && data3.feeds.length > 1) {
+      if (data3.feeds && data3.feeds.length > 0) {
         fillTable3(data3.feeds[0]);
       }
     } catch (error) {
@@ -240,7 +241,7 @@
       const modeText = modeDescriptions[data.field4[data.field4.length - 1]];
       const errorText = errorDescriptions['0'];
       const userText = userDescriptions[data.field1];
-      if (data.field4.length > 2) {
+      if (data.field4.length > 1) {
         errorText = errorDescriptions[data.field4[0]];
       }
       cells[0].textContent = modeText;
