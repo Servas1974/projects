@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Управление пользователями EVSE</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+      color: #333;
+    }
+    .editable-cell {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+ 
+  <h1>Админ EVSE "Рожевий будинок"</h1>
+ 
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Сергій 98</th>
+        <th>Євген 07</th>
+        <th>Артем</th>
+        <th>Сергій 68</th>
+        <th>User 5</th>
+        <th>User 6</th>
+        <th>User 7</th>
+        <th>User 8</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-field="1"></td>
+        <td data-field="2"></td>
+        <td data-field="3"></td>
+        <td data-field="4"></td>
+        <td data-field="5"></td>
+        <td data-field="6"></td>
+        <td data-field="7"></td>
+        <td data-field="8"></td>
+      </tr>
+      <tr>
+        <td data-field="1"></td>
+        <td data-field="2"></td>
+        <td data-field="3"></td>
+        <td data-field="4"></td>
+        <td data-field="5"></td>
+        <td data-field="6"></td>
+        <td data-field="7"></td>
+        <td data-field="8"></td>
+      </tr>
+    </tbody>
+  </table>
+ 
+  <p>Дважды кликните по ячейке, чтобы изменить значение.</p>
+ 
+  <button id="save-button" style="display:none;">Сохранить</button>
+  <p id="status-message"></p>
+ 
+  <script>
+   const CHANNEL_ID = '3030587'; // Замените на ID вашего канала
+    const READ_API_KEY = 'MBAV52JJYE2Y9HL2'; // Замените на Read API Key
+    const WRITE_API_KEY = 'T0FH1PM6D969SKTF'; // Замените на Write API Key
+ const CHANNEL_ID2 = '2847233'; 
+const WRITE_API_KEY2 = 'ZIBNDWJ726W56THL'; 
+    const tableBody = document.querySelector('#data-table tbody');
+    const saveButton = document.getElementById('save-button');
+    const statusMessage = document.getElementById('status-message');
+ 
+    const fields = ['field1', 'field2', 'field3', 'field4', 'field5', 'field6', 'field7', 'field8'];
+ 
+    async function fetchData() {
+      try {
+        const response = await fetch(`https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=${READ_API_KEY}&results=1`);
+        const data = await response.json();
+        const lastEntry = data.feeds[0];
+ 
+        if (lastEntry) {
+          fields.forEach((field, index) => {
+            const value = parseFloat(lastEntry[field]);
+            if (!isNaN(value)) {
+              const integerPart = Math.trunc(value);
+              const decimalPart = Math.round((value - integerPart) * 10);
+              
+              // Заполнение целой части (вторая строка)
+              tableBody.rows[0].cells[index].textContent = integerPart;
+ 
+              // Заполнение дробной части (третья строка)
+              tableBody.rows[1].cells[index].textContent = decimalPart;
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error);
+        statusMessage.textContent = 'Ошибка загрузки данных.';
+      }
+    }
+ 
+    function saveChanges() {
+  
+  const tableBody = document.querySelector('#data-table tbody');
+  const statusMessage = document.getElementById('status-message');
+  const saveButton = document.getElementById('save-button');
+ 
+  // --- Первая задача: Отправка 8 чисел в основной канал ---
+  const primaryUpdates = {};
+  for (let i = 0; i < 8; i++) {
+    const integerPart = parseFloat(tableBody.rows[0].cells[i].textContent);
+    const decimalPart = parseFloat(tableBody.rows[1].cells[i].textContent);
+ 
+    if (!isNaN(integerPart) && !isNaN(decimalPart)) {
+      const combinedValue = integerPart + (decimalPart / 10);
+      primaryUpdates[`field${i + 1}`] = combinedValue.toFixed(1);
+    }
+  }
+  
+  const primaryQuery = new URLSearchParams(primaryUpdates);
+  const primaryUrl = `https://api.thingspeak.com/update?api_key=${WRITE_API_KEY}&${primaryQuery.toString()}`;
+ 
+  // --- Вторая задача: Отправка одного числа в новый канал ---
+  const secondaryUpdates = {};
+  let binaryString = '';
+  const thirdRowCells = tableBody.rows[1].cells;
+  
+  for (let i = 7; i >= 0; i--) {
+    const bitValue = parseInt(thirdRowCells[i].textContent, 10);
+    if (bitValue === 0 || bitValue === 1) {
+      binaryString += bitValue.toString();
+    } else {
+      alert(`Недопустимое значение в поле. Допустимы только 0 и 1.`);
+      return;
+    }
+  }
+ binaryString += '0';
+  const decimalValue = parseInt(binaryString, 2);
+  secondaryUpdates[7] = decimalValue;
+  
+  const secondaryQuery = new URLSearchParams(secondaryUpdates);
+  const secondaryUrl = `https://api.thingspeak.com/update?api_key=${WRITE_API_KEY2}&${secondaryQuery.toString()}`;
+ 
+  // Отправляем оба запроса одновременно
+  Promise.all([
+    fetch(primaryUrl),
+    fetch(secondaryUrl)
+  ])
+  .then(responses => {
+    const [primaryResponse, secondaryResponse] = responses;
+    if (primaryResponse.ok && secondaryResponse.ok) {
+      statusMessage.textContent = 'Данные успешно сохранены в обоих каналах!';
+      saveButton.style.display = 'none';
+    } else {
+      throw new Error('Ошибка при сохранении данных.');
+    }
+  })
+  .catch(error => {
+    console.error('Ошибка при сохранении:', error);
+    statusMessage.textContent = 'Не удалось сохранить данные.';
+  });
+}
+ 
+    function enableEdit(event) {
+      const cell = event.target;
+      if (cell.tagName === 'TD' && !cell.querySelector('input')) {
+        const originalValue = cell.textContent;
+        cell.innerHTML = `<input type="number" value="${originalValue}" step="1">`;
+        const input = cell.querySelector('input');
+        input.focus();
+        input.onblur = () => {
+          cell.textContent = input.value;
+          saveButton.style.display = 'block';
+        };
+        input.onkeydown = (e) => {
+          if (e.key === 'Enter') {
+            input.blur();
+          }
+        };
+      }
+    }
+ 
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchData();
+      tableBody.addEventListener('dblclick', enableEdit);
+      saveButton.addEventListener('click', saveChanges);
+    });
+  </script>
+ 
+</body>
+</html>
