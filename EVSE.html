@@ -88,13 +88,15 @@
       <tr>
         <th>Режим</th>
         <th>Користувач</th>
-        <th colspan="2">Час підключення,<br>год|хв</th>
+        <th colspan="2">Час підключення,<br>год | хв</th>
         <th>Спожита енергія,<br>Вт*год</th>
         <th>Помилка</th>
+        <th>Данні<br>отримано</th>
       </tr>
     </thead>
     <tbody>
       <tr>
+        <td></td>
         <td></td>
         <td></td>
         <td></td>
@@ -167,30 +169,37 @@
   const CHANNEL_2_KEY = 'O5B444F5OB5OJ010';
   const CHANNEL_3_ID = '3021770';
   const CHANNEL_3_KEY = '93PAQ6CZB0C6DI5Q';
+  const CHANNEL_4_ID = '3030587';
+  const CHANNEL_4_KEY = 'MBAV52JJYE2Y9HL2';
   const THING_SPEAK_URL_1 = `https://api.thingspeak.com/channels/${CHANNEL_1_ID}/feeds.json?api_key=${CHANNEL_1_KEY}&results=1`;
   const THING_SPEAK_URL_2 = `https://api.thingspeak.com/channels/${CHANNEL_2_ID}/feeds.json?api_key=${CHANNEL_2_KEY}&results=1`;
   const THING_SPEAK_URL_3 = `https://api.thingspeak.com/channels/${CHANNEL_3_ID}/feeds.json?api_key=${CHANNEL_3_KEY}&results=1`;
+  const THING_SPEAK_URL_4 = `https://api.thingspeak.com/channels/${CHANNEL_4_ID}/feeds.json?api_key=${CHANNEL_4_KEY}&results=1`;
   async function fetchDataAndFillTables() {
     try {
-      const [response1, response2, response3] = await Promise.all([
+      const [response1, response2, response3, response4] = await Promise.all([
         fetch(THING_SPEAK_URL_1),
         fetch(THING_SPEAK_URL_2),
-        fetch(THING_SPEAK_URL_3)
+        fetch(THING_SPEAK_URL_3),
+        fetch(THING_SPEAK_URL_4)
       ]);
       const data1 = await response1.json();
       const data2 = await response2.json();
       const data3 = await response3.json();
+      const data4 = await response4.json();
       if (data1.feeds && data1.feeds.length > 0) {
         Energy = data1.feeds[0].field7;
         fillTable1(data1.feeds[0]);
         fillTable22(data1.feeds[0]);
       }
-      console.log(data2.feeds)
       if (data2.feeds && data2.feeds.length > 0) {
         fillTable2(data2.feeds[0]);
       }
       if (data3.feeds && data3.feeds.length > 0) {
         fillTable3(data3.feeds[0]);
+      }
+      if (data4.feeds && data4.feeds.length > 0) {
+        fillTable33(data4.feeds[0]);
       }
     } catch (error) {
       console.error("Ошибка при получении данных с ThingSpeak:", error);
@@ -212,6 +221,14 @@
   }
 
   function fillTable2(data) {
+    const lastUpdateTime = data.created_at;
+    // Создаём объект Date
+    const date = new Date(lastUpdateTime);
+    // Получаем время в вашем локальном часовом поясе (часы и минуты)
+    const localTime = date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
     const table = document.querySelector('body > table:nth-of-type(2) tbody tr');
     if (table) {
       const cells = table.querySelectorAll('td');
@@ -251,6 +268,7 @@
       cells[2].textContent = hours;
       cells[3].textContent = minutes;
       cells[5].textContent = errorText || "Немає";
+      cells[6].textContent = localTime;
     }
   }
 
@@ -286,5 +304,27 @@
       secondRowCells[4].textContent = (parseFloat(data.field5) * koefPart + parseFloat(data.field5)).toFixed(1);
     }
   }
-  document.addEventListener('DOMContentLoaded', fetchDataAndFillTables);
+
+  function fillTable33(data) {
+    const table = document.querySelector('body > table:nth-of-type(3) tbody');
+    if (table) {
+      const rows = table.querySelectorAll('tr');
+      const RowCells = rows[2].querySelectorAll('td');
+      // Заполняем третью строку 
+      RowCells[0].textContent = data.field1;
+      RowCells[1].textContent = data.field2;
+      RowCells[2].textContent = data.field3;
+      RowCells[3].textContent = data.field4;
+      RowCells[4].textContent = data.field5;
+      RowCells[5].textContent = data.field6;
+      RowCells[6].textContent = data.field7;
+      RowCells[7].textContent = data.field8;
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    // Вызываем функцию один раз при загрузке страницы
+    fetchDataAndFillTables();
+    // Затем вызываем её каждые 30 секунд (30000 миллисекунд)
+    setInterval(fetchDataAndFillTables, 20000);
+  });
 </script>
