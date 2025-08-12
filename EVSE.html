@@ -296,35 +296,42 @@
       firstRowCells[6].textContent = data.field7;
       firstRowCells[7].textContent = data.field8;
       // Заполняем вторую строку (Енергія до сплати, кВт*год) на основе вычислений
+   /*
       const koefPart = parseFloat(data.field1) / (parseFloat(Energy) - parseFloat(data.field1));
       secondRowCells[0].textContent = 0;
       secondRowCells[1].textContent = (parseFloat(data.field2) * koefPart + parseFloat(data.field2)).toFixed(1);
       secondRowCells[2].textContent = (parseFloat(data.field3) * koefPart + parseFloat(data.field3)).toFixed(1);
       secondRowCells[3].textContent = (parseFloat(data.field4) * koefPart + parseFloat(data.field4)).toFixed(1);
       secondRowCells[4].textContent = (parseFloat(data.field5) * koefPart + parseFloat(data.field5)).toFixed(1);
+      */
+      secondRowCells[1].textContent = (parseFloat(data.field2) * 1.5).toFixed(1);
+      secondRowCells[2].textContent = (parseFloat(data.field3) * 1.5).toFixed(1);
+      secondRowCells[3].textContent = (parseFloat(data.field4) * 1.5).toFixed(1);
+      secondRowCells[0].textContent = (parseFloat(Energy) - (parseFloat(data.field2) + parseFloat(data.field3) + parseFloat(data.field4)) * 1.5).toFixed(1);
+       
+      }
     }
-  }
 
-  function fillTable33(data) {
-    const table = document.querySelector('body > table:nth-of-type(3) tbody');
-    if (table) {
-      const rows = table.querySelectorAll('tr');
-      const RowCells = rows[2].querySelectorAll('td');
-      // Заполняем третью строку 
-      RowCells[0].textContent = data.field1;
-      RowCells[1].textContent = data.field2;
-      RowCells[2].textContent = data.field3;
-      RowCells[3].textContent = data.field4;
-      RowCells[4].textContent = data.field5;
-      RowCells[5].textContent = data.field6;
-      RowCells[6].textContent = data.field7;
-      RowCells[7].textContent = data.field8;
+    function fillTable33(data) {
+      const table = document.querySelector('body > table:nth-of-type(3) tbody');
+      if (table) {
+        const rows = table.querySelectorAll('tr');
+        const RowCells = rows[2].querySelectorAll('td');
+        // Заполняем третью строку 
+        RowCells[0].textContent = data.field1;
+        RowCells[1].textContent = data.field2;
+        RowCells[2].textContent = data.field3;
+        RowCells[3].textContent = data.field4;
+        RowCells[4].textContent = data.field5;
+        RowCells[5].textContent = data.field6;
+        RowCells[6].textContent = data.field7;
+        RowCells[7].textContent = data.field8;
+      }
     }
-  }
-  document.addEventListener('DOMContentLoaded', () => {
-    // Вызываем функцию один раз при загрузке страницы
-    fetchDataAndFillTables();
-    // Затем вызываем её каждые 30 секунд (30000 миллисекунд)
-    setInterval(fetchDataAndFillTables, 20000);
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+      // Вызываем функцию один раз при загрузке страницы
+      fetchDataAndFillTables();
+      // Затем вызываем её каждые 30 секунд (30000 миллисекунд)
+      setInterval(fetchDataAndFillTables, 20000);
+    });
 </script>
