@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <title>EVSE "Рожевий будинок"</title>
@@ -9,53 +8,47 @@
       margin: 0;
       padding: 0;
     }
-
     h1 {
       margin-left: 200px;
     }
-
     table {
       border-collapse: collapse;
       width: auto;
       margin-bottom: 20px;
       margin-left: 50px;
     }
-
     th,
     td {
       border: 1px solid black;
       padding: 8px;
       text-align: center;
-      /* Центрирование содержимого */
     }
-
     caption {
       font-weight: bold;
       text-align: left;
       margin-bottom: 5px;
     }
-
     .purple-header th {
       background-color: lightgreen;
-      /* Изменен на зеленый */
       color: white;
     }
-
     .purple-header tbody tr:nth-child(2) th:first-child {
       background-color: green;
-      /* Светло-зеленый для первой ячейки 3-й строки */
     }
-
     .purple-header tbody tr:nth-child(3) th:first-child {
       background-color: orange;
     }
+    /* Стили для невидимых ссылок */
+    .invisible-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+    }
   </style>
 </head>
-
 <body>
-
   <h1>EVSE "Рожевий будинок"</h1>
-
   <table>
     <caption>Статус пристрою</caption>
     <thead style="background-color: blue; color: white;">
@@ -71,17 +64,16 @@
     </thead>
     <tbody>
       <tr>
+        <td><a href="https://thingspeak.mathworks.com/channels/2219372/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=5000&timescale=30&type=line" class="invisible-link" target="_blank" rel="noopener noreferrer"></a></td>
+        <td><a href="https://thingspeak.mathworks.com/channels/2219372/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=5000&type=line" class="invisible-link" target="_blank" rel="noopener noreferrer"></a></td>
+        <td><a href="https://thingspeak.mathworks.com/channels/2219372/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=5000&type=line" class="invisible-link" target="_blank" rel="noopener noreferrer"></a></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><a href="https://thingspeak.mathworks.com/channels/2219372/charts/8?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=5000&timescale=30&type=line" class="invisible-link" target="_blank" rel="noopener noreferrer"></a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-
   <table>
     <caption>Поточний режим</caption>
     <thead style="background-color: yellow;">
@@ -106,9 +98,8 @@
       </tr>
     </tbody>
   </table>
-
   <table class="purple-header">
-    <caption>Інформація про користувачив у звітноьому періоді</caption>
+    <caption>Інформація про користувачів у звітному періоді</caption>
     <thead>
       <tr>
         <th></th>
@@ -158,183 +149,182 @@
       </tr>
     </tbody>
   </table>
+  <p>***При несплаті у попередньму періоді більш ніж за 200кВт послугу буде припинено. Дякую за розуміння.</p>
+  <script>
+    const CHANNEL_1_ID = '2219372';
+    const CHANNEL_1_KEY = '09SKRQXNSOIWRJ04';
+    const CHANNEL_2_ID = '2847233';
+    const CHANNEL_2_KEY = 'O5B444F5OB5OJ010';
+    const CHANNEL_3_ID = '3021770';
+    const CHANNEL_3_KEY = '93PAQ6CZB0C6DI5Q';
+    const CHANNEL_4_ID = '3030587';
+    const CHANNEL_4_KEY = 'MBAV52JJYE2Y9HL2';
+    const THING_SPEAK_URL_1 = `https://api.thingspeak.com/channels/${CHANNEL_1_ID}/feeds.json?api_key=${CHANNEL_1_KEY}&results=1`;
+    const THING_SPEAK_URL_2 = `https://api.thingspeak.com/channels/${CHANNEL_2_ID}/feeds.json?api_key=${CHANNEL_2_KEY}&results=1`;
+    const THING_SPEAK_URL_3 = `https://api.thingspeak.com/channels/${CHANNEL_3_ID}/feeds.json?api_key=${CHANNEL_3_KEY}&results=1`;
+    const THING_SPEAK_URL_4 = `https://api.thingspeak.com/channels/${CHANNEL_4_ID}/feeds.json?api_key=${CHANNEL_4_KEY}&results=1`;
 
-</body>
+    async function fetchDataAndFillTables() {
+      try {
+        const [response1, response2, response3, response4] = await Promise.all([
+          fetch(THING_SPEAK_URL_1),
+          fetch(THING_SPEAK_URL_2),
+          fetch(THING_SPEAK_URL_3),
+          fetch(THING_SPEAK_URL_4)
+        ]);
+        const data1 = await response1.json();
+        const data2 = await response2.json();
+        const data3 = await response3.json();
+        const data4 = await response4.json();
 
-</html>
-<script>
-  const CHANNEL_1_ID = '2219372';
-  const CHANNEL_1_KEY = '09SKRQXNSOIWRJ04';
-  const CHANNEL_2_ID = '2847233';
-  const CHANNEL_2_KEY = 'O5B444F5OB5OJ010';
-  const CHANNEL_3_ID = '3021770';
-  const CHANNEL_3_KEY = '93PAQ6CZB0C6DI5Q';
-  const CHANNEL_4_ID = '3030587';
-  const CHANNEL_4_KEY = 'MBAV52JJYE2Y9HL2';
-  const THING_SPEAK_URL_1 = `https://api.thingspeak.com/channels/${CHANNEL_1_ID}/feeds.json?api_key=${CHANNEL_1_KEY}&results=1`;
-  const THING_SPEAK_URL_2 = `https://api.thingspeak.com/channels/${CHANNEL_2_ID}/feeds.json?api_key=${CHANNEL_2_KEY}&results=1`;
-  const THING_SPEAK_URL_3 = `https://api.thingspeak.com/channels/${CHANNEL_3_ID}/feeds.json?api_key=${CHANNEL_3_KEY}&results=1`;
-  const THING_SPEAK_URL_4 = `https://api.thingspeak.com/channels/${CHANNEL_4_ID}/feeds.json?api_key=${CHANNEL_4_KEY}&results=1`;
-  async function fetchDataAndFillTables() {
-    try {
-      const [response1, response2, response3, response4] = await Promise.all([
-        fetch(THING_SPEAK_URL_1),
-        fetch(THING_SPEAK_URL_2),
-        fetch(THING_SPEAK_URL_3),
-        fetch(THING_SPEAK_URL_4)
-      ]);
-      const data1 = await response1.json();
-      const data2 = await response2.json();
-      const data3 = await response3.json();
-      const data4 = await response4.json();
-      if (data1.feeds && data1.feeds.length > 0) {
-        Energy = data1.feeds[0].field7;
-        fillTable1(data1.feeds[0]);
-        fillTable22(data1.feeds[0]);
+        if (data1.feeds && data1.feeds.length > 0) {
+          const energy = data1.feeds[0].field7;
+          fillTable1(data1.feeds[0]);
+          fillTable2(data1.feeds[0], data2.feeds[0]);
+          fillTable3(data3.feeds[0], energy);
+        }
+
+        if (data4.feeds && data4.feeds.length > 0) {
+          fillTable33(data4.feeds[0]);
+        }
+      } catch (error) {
+        console.error("Ошибка при получении данных с ThingSpeak:", error);
       }
-      if (data2.feeds && data2.feeds.length > 0) {
-        fillTable2(data2.feeds[0]);
-      }
-      if (data3.feeds && data3.feeds.length > 0) {
-        fillTable3(data3.feeds[0]);
-      }
-      if (data4.feeds && data4.feeds.length > 0) {
-        fillTable33(data4.feeds[0]);
-      }
-    } catch (error) {
-      console.error("Ошибка при получении данных с ThingSpeak:", error);
     }
-  }
 
-  function fillTable1(data) {
-    const table = document.querySelector('body > table:nth-of-type(1) tbody tr');
-    if (table) {
-      const cells = table.querySelectorAll('td');
-      cells[0].textContent = data.field1;
-      cells[1].textContent = data.field2;
-      cells[2].textContent = data.field5;
-      cells[3].textContent = data.field3;
-      cells[4].textContent = data.field4;
-      cells[5].textContent = data.field8;
-      cells[6].textContent = data.field7;
+    function fillTable1(data) {
+      const table = document.querySelector('body > table:nth-of-type(1) tbody tr');
+      if (table) {
+        const cells = table.querySelectorAll('td');
+        cells[0].querySelector('a').textContent = data.field1;
+        cells[1].querySelector('a').textContent = data.field2;
+        cells[2].querySelector('a').textContent = data.field5;
+        cells[3].textContent = data.field3;
+        cells[4].textContent = data.field4;
+        cells[5].querySelector('a').textContent = data.field8;
+        cells[6].textContent = data.field7;
+      }
     }
-  }
 
-  function fillTable2(data) {
-    const lastUpdateTime = data.created_at;
-    // Создаём объект Date
-    const date = new Date(lastUpdateTime);
-    // Получаем время в вашем локальном часовом поясе (часы и минуты)
-    const localTime = date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
+    function fillTable2(data1, data2) {
+      if (!data1 || !data2) return;
+
+      const lastUpdateTime = data2.created_at;
+      const date = new Date(lastUpdateTime);
+      const localTime = date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const table = document.querySelector('body > table:nth-of-type(2) tbody tr');
+      if (table) {
+        const cells = table.querySelectorAll('td');
+
+        const modeDescriptions = {
+          '1': 'Готовність',
+          '2': 'Підключено',
+          '3': 'Очикування',
+          '4': 'Помилка',
+          '5': 'Заряджання',
+          '7': 'Відмова',
+          '9': 'Пауза 10сек'
+        };
+
+        const errorDescriptions = {
+          '0': 'Немає',
+          '1': 'Коннектор',
+          '2': 'Тест RCMU',
+          '3': 'Заземлення',
+          '4': 'Перегрів'
+        };
+
+        const userDescriptions = {
+          '0': 'Немає',
+          '1': 'Сергій 98',
+          '2': 'Євген 07',
+          '3': 'Артем',
+          '4': 'Сергій 68',
+          '5': 'Власник'
+        };
+
+        const modeValue = data2.field4;
+        const modeText = modeDescriptions[String(modeValue).slice(-1)];
+        const userText = userDescriptions[data2.field1];
+
+        let errorText = 'Немає';
+        if (modeText === 'Помилка' && String(modeValue).length > 1) {
+          const errorCode = String(modeValue).slice(-2, -1);
+          errorText = errorDescriptions[errorCode] || 'Невідома помилка';
+        }
+
+        const hours = String(data2.field2).padStart(2, '0');
+        const minutes = String(data2.field3).padStart(2, '0');
+
+        cells[0].textContent = modeText;
+        cells[1].textContent = userText;
+        cells[2].textContent = hours;
+        cells[3].textContent = minutes;
+        cells[4].textContent = data1.field6;
+        cells[5].textContent = errorText;
+        cells[6].textContent = localTime;
+      }
+    }
+
+    function fillTable3(data, totalEnergy) {
+      if (!data) return;
+      const table = document.querySelector('body > table:nth-of-type(3) tbody');
+      if (table) {
+        const rows = table.querySelectorAll('tr');
+        const firstRowCells = rows[0].querySelectorAll('td');
+        const secondRowCells = rows[1].querySelectorAll('td');
+
+        // Заполняем первую строку (Спожита енергія, кВт*год)
+        firstRowCells[0].textContent = data.field1;
+        firstRowCells[1].textContent = data.field2;
+        firstRowCells[2].textContent = data.field3;
+        firstRowCells[3].textContent = data.field4;
+        firstRowCells[4].textContent = data.field5;
+        firstRowCells[5].textContent = data.field6;
+        firstRowCells[6].textContent = data.field7;
+        firstRowCells[7].textContent = data.field8;
+
+        // Заполняем вторую строку (Енергія до сплати, кВт*год)
+        const user2_cost = parseFloat(data.field2) * 1.5;
+        const user3_cost = parseFloat(data.field3) * 1.5;
+        const user4_cost = parseFloat(data.field4) * 1.5;
+
+        secondRowCells[1].textContent = user2_cost.toFixed(1);
+        secondRowCells[2].textContent = user3_cost.toFixed(1);
+        secondRowCells[3].textContent = user4_cost.toFixed(1);
+
+        const ownerEnergy = parseFloat(totalEnergy) - (user2_cost + user3_cost + user4_cost);
+        secondRowCells[0].textContent = ownerEnergy.toFixed(1);
+      }
+    }
+
+    function fillTable33(data) {
+      if (!data) return;
+      const table = document.querySelector('body > table:nth-of-type(3) tbody');
+      if (table) {
+        const rows = table.querySelectorAll('tr');
+        const RowCells = rows[2].querySelectorAll('td');
+
+        // Заполняем третью строку
+        RowCells[0].textContent = data.field1;
+        RowCells[1].textContent = data.field2;
+        RowCells[2].textContent = data.field3;
+        RowCells[3].textContent = data.field4;
+        RowCells[4].textContent = data.field5;
+        RowCells[5].textContent = data.field6;
+        RowCells[6].textContent = data.field7;
+        RowCells[7].textContent = data.field8;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchDataAndFillTables();
+      setInterval(fetchDataAndFillTables, 20000);
     });
-    const table = document.querySelector('body > table:nth-of-type(2) tbody tr');
-    if (table) {
-      const cells = table.querySelectorAll('td');
-      const modeDescriptions = {
-        '1': 'Готовність',
-        '2': 'Підключено',
-        '3': 'Очикування',
-        '4': 'Помилка',
-        '5': 'Заряджання',
-        '7': 'Відмова',
-        '9': 'Пауза 10сек'
-      };
-      const errorDescriptions = {
-        '0': 'Немає',
-        '1': 'Коннектор',
-        '2': 'Тест RCMU',
-        '3': 'Заземлення',
-        '4': 'Перегрів'
-      };
-      const userDescriptions = {
-        '0': 'Немає',
-        '1': 'Сергій 98',
-        '2': 'Євген 07',
-        '3': 'Артем',
-        '4': 'Сергій 68',
-        '5': 'Власник'
-      };
-      const modeText = modeDescriptions[data.field4[data.field4.length - 1]];
-              let errorText = errorDescriptions['0'];
-      if (modeText == 'Помилка') {
-         errorText = errorDescriptions[data.field4[data.field4.length - 2]];
-      }
-      const userText = userDescriptions[data.field1];
-      if (data.field4.length > 1) {
-        errorText = errorDescriptions[data.field4[0]];
-      }
-      cells[0].textContent = modeText;
-      const hours = String(data.field2).padStart(2, '0');
-      const minutes = String(data.field3).padStart(2, '0');
-      cells[1].textContent = userText;
-      cells[2].textContent = hours;
-      cells[3].textContent = minutes;
-      cells[5].textContent = errorText || "Немає";
-      cells[6].textContent = localTime;
-    }
-  }
-
-  function fillTable22(data) {
-    const table = document.querySelector('body > table:nth-of-type(2) tbody tr');
-    if (table) {
-      const cells = table.querySelectorAll('td');
-      cells[4].textContent = data.field6;
-    }
-  }
-
-  function fillTable3(data) {
-    const table = document.querySelector('body > table:nth-of-type(3) tbody');
-    if (table) {
-      const rows = table.querySelectorAll('tr');
-      const firstRowCells = rows[0].querySelectorAll('td');
-      const secondRowCells = rows[1].querySelectorAll('td');
-      // Заполняем первую строку (Спожита енергія, кВт*год)
-      firstRowCells[0].textContent = data.field1;
-      firstRowCells[1].textContent = data.field2;
-      firstRowCells[2].textContent = data.field3;
-      firstRowCells[3].textContent = data.field4;
-      firstRowCells[4].textContent = data.field5;
-      firstRowCells[5].textContent = data.field6;
-      firstRowCells[6].textContent = data.field7;
-      firstRowCells[7].textContent = data.field8;
-      // Заполняем вторую строку (Енергія до сплати, кВт*год) на основе вычислений
-      /*
-         const koefPart = parseFloat(data.field1) / (parseFloat(Energy) - parseFloat(data.field1));
-         secondRowCells[0].textContent = 0;
-         secondRowCells[1].textContent = (parseFloat(data.field2) * koefPart + parseFloat(data.field2)).toFixed(1);
-         secondRowCells[2].textContent = (parseFloat(data.field3) * koefPart + parseFloat(data.field3)).toFixed(1);
-         secondRowCells[3].textContent = (parseFloat(data.field4) * koefPart + parseFloat(data.field4)).toFixed(1);
-         secondRowCells[4].textContent = (parseFloat(data.field5) * koefPart + parseFloat(data.field5)).toFixed(1);
-         */
-      secondRowCells[1].textContent = (parseFloat(data.field2) * 1.5).toFixed(1);
-      secondRowCells[2].textContent = (parseFloat(data.field3) * 1.5).toFixed(1);
-      secondRowCells[3].textContent = (parseFloat(data.field4) * 1.5).toFixed(1);
-      secondRowCells[0].textContent = (parseFloat(Energy) - (parseFloat(data.field2) + parseFloat(data.field3) + parseFloat(data.field4)) * 1.5).toFixed(1);
-    }
-  }
-
-  function fillTable33(data) {
-    const table = document.querySelector('body > table:nth-of-type(3) tbody');
-    if (table) {
-      const rows = table.querySelectorAll('tr');
-      const RowCells = rows[2].querySelectorAll('td');
-      // Заполняем третью строку 
-      RowCells[0].textContent = data.field1;
-      RowCells[1].textContent = data.field2;
-      RowCells[2].textContent = data.field3;
-      RowCells[3].textContent = data.field4;
-      RowCells[4].textContent = data.field5;
-      RowCells[5].textContent = data.field6;
-      RowCells[6].textContent = data.field7;
-      RowCells[7].textContent = data.field8;
-    }
-  }
-  document.addEventListener('DOMContentLoaded', () => {
-    // Вызываем функцию один раз при загрузке страницы
-    fetchDataAndFillTables();
-    // Затем вызываем её каждые 30 секунд (30000 миллисекунд)
-    setInterval(fetchDataAndFillTables, 20000);
-  });
-</script>
+  </script>
+</body>
+</html>
